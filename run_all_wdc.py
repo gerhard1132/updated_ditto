@@ -3,7 +3,6 @@ attrs = ['title', 'title_description', 'title_description_brand', 'title_descrip
 sizes = ["small", "medium", "large", "xlarge"]
 
 import os
-import time
 
 gpu_id = 0
 

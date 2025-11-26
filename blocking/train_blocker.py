@@ -1,6 +1,5 @@
 import os
 import argparse
-import json
 import sys
 import math
 
@@ -8,7 +7,7 @@ sys.path.insert(0, "sentence-transformers")
 
 from sentence_transformers.readers import InputExample
 from sentence_transformers import models, losses
-from sentence_transformers import SentencesDataset, LoggingHandler, SentenceTransformer
+from sentence_transformers import SentencesDataset, SentenceTransformer
 from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
 
 from torch.utils.data import DataLoader

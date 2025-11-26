@@ -1,6 +1,3 @@
-import numpy as np
-import csv
-import sys
 import os
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -9,7 +6,8 @@ from nltk.corpus import stopwords
 
 from .dataset import get_tokenizer
 
-stopwords = set(stopwords.words('english'))
+stopwords = set(stopwords.words("english"))
+
 
 class Summarizer:
     """To summarize a data entry pair into length up to the max sequence length.
@@ -22,6 +20,7 @@ class Summarizer:
         config (Dictionary): the task configuration
         tokenizer (Tokenizer): a tokenizer from the huggingface library
     """
+
     def __init__(self, task_config, lm):
         self.config = task_config
         self.tokenizer = get_tokenizer(lm=lm)
@@ -35,14 +34,12 @@ class Summarizer:
 
         Store the index and vocabulary in self.idf and self.vocab.
         """
-        fns = [self.config['trainset'],
-               self.config['validset'],
-               self.config['testset']]
+        fns = [self.config["trainset"], self.config["validset"], self.config["testset"]]
         content = []
         for fn in fns:
             with open(fn) as fin:
                 for line in fin:
-                    LL = line.split('\t')
+                    LL = line.split("\t")
                     if len(LL) > 2:
                         for entry in LL:
                             content.append(entry)
@@ -52,8 +49,7 @@ class Summarizer:
         self.idf = vectorizer.idf_
 
     def get_len(self, word):
-        """Return the sentence_piece length of a token.
-        """
+        """Return the sentence_piece length of a token."""
         if word in self.len_cache:
             return self.len_cache[word]
         length = len(self.tokenizer.tokenize(word))
@@ -72,20 +68,19 @@ class Summarizer:
         Returns:
             str: the summarized example
         """
-        sentA, sentB, label = row.strip().split('\t')
-        res = ''
+        sentA, sentB, label = row.strip().split("\t")
+        res = ""
         cnt = Counter()
         for sent in [sentA, sentB]:
-            tokens = sent.split(' ')
+            tokens = sent.split(" ")
             for token in tokens:
-                if token not in ['COL', 'VAL'] and \
-                   token not in stopwords:
+                if token not in ["COL", "VAL"] and token not in stopwords:
                     if token in self.vocab:
                         cnt[token] += self.idf[self.vocab[token]]
 
         for sent in [sentA, sentB]:
-            token_cnt = Counter(sent.split(' '))
-            total_len = token_cnt['COL'] + token_cnt['VAL']
+            token_cnt = Counter(sent.split(" "))
+            total_len = token_cnt["COL"] + token_cnt["VAL"]
 
             subset = Counter()
             for token in set(token_cnt.keys()):
@@ -101,16 +96,16 @@ class Summarizer:
                 topk_tokens_copy.add(word)
 
             num_tokens = 0
-            for token in sent.split(' '):
-                if token in ['COL', 'VAL']:
-                    res += token + ' '
+            for token in sent.split(" "):
+                if token in ["COL", "VAL"]:
+                    res += token + " "
                 elif token in topk_tokens_copy:
-                    res += token + ' '
+                    res += token + " "
                     topk_tokens_copy.remove(token)
 
-            res += '\t'
+            res += "\t"
 
-        res += label + '\n'
+        res += label + "\n"
         return res
 
     def transform_file(self, input_fn, max_len=256, overwrite=False):
@@ -126,10 +121,9 @@ class Summarizer:
         Returns:
             str: the output file name
         """
-        out_fn = input_fn + '.su'
-        if not os.path.exists(out_fn) or \
-           os.stat(out_fn).st_size == 0 or overwrite:
-            with open(out_fn, 'w') as fout:
+        out_fn = input_fn + ".su"
+        if not os.path.exists(out_fn) or os.stat(out_fn).st_size == 0 or overwrite:
+            with open(out_fn, "w") as fout:
                 for line in open(input_fn):
                     fout.write(self.transform(line, max_len=max_len))
         return out_fn
