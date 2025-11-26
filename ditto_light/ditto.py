@@ -69,7 +69,6 @@ def evaluate(model, iterator, threshold=None):
         float (optional): if threshold is not provided, the threshold
             value that gives the optimal F1
     """
-    all_p = []
     all_y = []
     all_probs = []
     with torch.no_grad():

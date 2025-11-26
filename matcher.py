@@ -17,7 +17,7 @@ from ditto_light.ditto import evaluate, DittoModel
 from ditto_light.exceptions import ModelNotFoundError
 from ditto_light.dataset import DittoDataset
 from ditto_light.summarize import Summarizer
-from ditto_light.knowledge import *
+from ditto_light.knowledge import ProductDKInjector, GeneralDKInjector
 
 
 def set_seed(seed: int):
@@ -190,8 +190,8 @@ def predict(
     run_tag = "%s_lm=%s_dk=%s_su=%s" % (
         config["name"],
         lm,
-        str(dk_injector != None),
-        str(summarizer != None),
+        str(dk_injector is not None),
+        str(summarizer is not None),
     )
     os.system("echo %s %f >> log.txt" % (run_tag, run_time))
 
@@ -199,7 +199,6 @@ def predict(
 def tune_threshold(config, model, hp):
     """Tune the prediction threshold for a given model on a validation set"""
     validset = config["validset"]
-    task = hp.task
 
     # summarize the sequences up to the max sequence length
     set_seed(123)
@@ -289,7 +288,6 @@ def load_model(task, path, lm, use_gpu, fp16=True):
     configs = json.load(open("configs.json"))
     configs = {conf["name"]: conf for conf in configs}
     config = configs[task]
-    config_list = [config]
 
     if use_gpu:
         device = "cuda" if torch.cuda.is_available() else "cpu"

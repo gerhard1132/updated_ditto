@@ -92,7 +92,7 @@ class ProductDKInjector(DKInjector):
                         res += "%d " % (int(val))
                     else:
                         res += "%.2f " % (val)
-                except:
+                except Exception:
                     res += token.text + " "
             elif len(token.text) >= 7 and any([ch.isdigit() for ch in token.text]):
                 res += "ID " + token.text + " "
@@ -144,7 +144,7 @@ class GeneralDKInjector(DKInjector):
                         res += "%d " % (int(val))
                     else:
                         res += "%.2f " % (val)
-                except:
+                except Exception:
                     res += token.text + " "
             elif len(token.text) >= 7 and any([ch.isdigit() for ch in token.text]):
                 res += "ID " + token.text + " "

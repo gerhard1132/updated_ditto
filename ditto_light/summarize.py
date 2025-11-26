@@ -95,7 +95,6 @@ class Summarizer:
                 total_len += bert_len
                 topk_tokens_copy.add(word)
 
-            num_tokens = 0
             for token in sent.split(" "):
                 if token in ["COL", "VAL"]:
                     res += token + " "
