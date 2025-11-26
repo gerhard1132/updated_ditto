@@ -1,3 +1,4 @@
+import nltk
 import torch
 import os
 import numpy as np
@@ -7,6 +8,7 @@ import jsonlines
 import time
 import argparse
 
+nltk.download('stopwords')
 
 from torch.utils import data
 from tqdm import tqdm

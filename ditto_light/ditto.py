@@ -6,7 +6,8 @@ import numpy as np
 
 from sklearn import metrics
 from torch.utils import data
-from transformers import AutoModel, AdamW, get_linear_schedule_with_warmup
+from torch.optim import AdamW
+from transformers import AutoModel, get_linear_schedule_with_warmup #AdamW
 from tensorboardX import SummaryWriter
 # from apex import amp
 
