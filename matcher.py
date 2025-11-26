@@ -6,12 +6,13 @@ import json
 import jsonlines
 import time
 import argparse
-import sklearn
+
 
 from torch.utils import data
 from tqdm import tqdm
-from apex import amp
+# from apex import amp
 from scipy.special import softmax
+from sklearn import metrics
 
 from ditto_light.ditto import evaluate, DittoModel
 from ditto_light.exceptions import ModelNotFoundError
@@ -259,7 +260,7 @@ def tune_threshold(config, model, hp):
         for line in fin:
             labels.append(int(line.split("\t")[-1]))
 
-    real_f1 = sklearn.metrics.f1_score(labels, predicts)
+    real_f1 = metrics.f1_score(labels, predicts)
     print("load_f1 =", f1)
     print("real_f1 =", real_f1)
 
@@ -300,8 +301,9 @@ def load_model(task, path, lm, use_gpu, fp16=True):
     model.load_state_dict(saved_state["model"])
     model = model.to(device)
 
-    if fp16 and "cuda" in device:
-        model = amp.initialize(model, opt_level="O2")
+    # TODO: Put in amp if CUDA available
+    #if fp16 and "cuda" in device:
+    #   model = amp.initialize(model, opt_level="O2")
 
     return config, model
 

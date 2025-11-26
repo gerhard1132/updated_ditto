@@ -2,12 +2,13 @@ import os
 import torch
 import torch.nn as nn
 import numpy as np
-import sklearn.metrics as metrics
 
+
+from sklearn import metrics
 from torch.utils import data
 from transformers import AutoModel, AdamW, get_linear_schedule_with_warmup
 from tensorboardX import SummaryWriter
-from apex import amp
+# from apex import amp
 
 lm_mp = {"roberta": "roberta-base", "distilbert": "distilbert-base-uncased"}
 
@@ -124,11 +125,12 @@ def train_step(train_iter, model, optimizer, scheduler, hp):
 
         loss = criterion(prediction, y.to(model.device))
 
-        if hp.fp16:
-            with amp.scale_loss(loss, optimizer) as scaled_loss:
-                scaled_loss.backward()
-        else:
-            loss.backward()
+        # TODO: Put in amp if CUDA available
+        #if hp.fp16:
+        #    with amp.scale_loss(loss, optimizer) as scaled_loss:
+        #        scaled_loss.backward()
+        #else:
+        loss.backward()
         optimizer.step()
         scheduler.step()
         if i % 10 == 0:  # monitoring
@@ -180,8 +182,9 @@ def train(trainset, validset, testset, run_tag, hp):
     model = model.cuda()
     optimizer = AdamW(model.parameters(), lr=hp.lr)
 
-    if hp.fp16:
-        model, optimizer = amp.initialize(model, optimizer, opt_level="O2")
+    # TODO: Put in amp if CUDA available
+    #if hp.fp16:
+    #    model, optimizer = amp.initialize(model, optimizer, opt_level="O2")
     num_steps = (len(trainset) // hp.batch_size) * hp.n_epochs
     scheduler = get_linear_schedule_with_warmup(
         optimizer, num_warmup_steps=0, num_training_steps=num_steps
